@@ -1,0 +1,74 @@
+package com.itzpx.bos.web.action;
+
+import java.io.IOException;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import com.itzpx.bos.domain.User;
+import com.itzpx.bos.service.IUserService;
+import com.itzpx.bos.utils.BosUtils;
+import com.itzpx.bos.web.action.base.BaseAction;
+
+@Controller
+@Scope("prototype")
+public class UserAction extends BaseAction<User> {
+	// 属性注入checkcode页面输入的checkcode
+	private String checkcode;
+
+	public void setCheckcode(String checkcode) {
+		this.checkcode = checkcode;
+	}
+
+	@Autowired
+	private IUserService userService;
+
+	/**
+	 * 用户登陆
+	 */
+	public String login() {
+		// 从session中获取checkcode
+		String validatecode = (String) ServletActionContext.getRequest().getSession().getAttribute("key");
+		if (StringUtils.isNoneBlank(checkcode) && checkcode.equals(validatecode)) {
+			User user = userService.login(model);
+			if (user != null) {
+				// 登陆成功,将user对象放入session中，跳转页面
+				ServletActionContext.getRequest().getSession().setAttribute("loginUser", user);
+				return HOME;
+			} else {
+				// 验证失败，
+				this.addActionError("用户名或者密码输入错误！");
+				return LOGIN;
+			}
+		} else {
+			this.addActionError("输入的验证码错误！");
+			return LOGIN;
+		}
+
+	}
+
+	// 用户注销
+	public String logout() {
+		ServletActionContext.getRequest().getSession().invalidate();
+		return LOGIN;
+	}
+	//修改密码
+	public String editPassword() throws IOException {
+		String f = "1";
+		//获取当前用户
+		User user = BosUtils.getLoginUser();
+		//修改密码的方法
+		try {
+			userService.editPassword(user.getId(),model.getPassword());
+		}catch (Exception e) {
+			f = "0";
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		ServletActionContext.getResponse().getWriter().print(f);
+		return NONE;
+	}
+}

@@ -1,0 +1,11 @@
+package com.itzpx.bos.service;
+
+import java.util.List;
+
+import com.itzpx.bos.domain.Region;
+
+public interface IRegionService {
+
+	public void saveBatch(List<Region> regionList);
+
+}

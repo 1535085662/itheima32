@@ -1,0 +1,30 @@
+package com.itzpx.bos.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.itzpx.bos.dao.IUserDao;
+import com.itzpx.bos.domain.User;
+import com.itzpx.bos.service.IUserService;
+import com.itzpx.bos.utils.MD5Utils;
+@Service
+@Transactional
+public class UserServiceImpl implements IUserService{
+	//@Autowired由sping工厂创建对象
+	@Autowired
+	private IUserDao userDao;
+	public User login(User user) {
+		//md5加密
+		String password = MD5Utils.md5(user.getPassword());
+		return userDao.findUserByUsernameAndPassword(user.getUsername(),password);
+	}
+	/**
+	 * 根据用户id修改密码
+	 */
+	public void editPassword(String id, String password) {
+		password = MD5Utils.md5(password);
+		userDao.executeUpdate("user.editpassword", password,id);
+	}
+
+}

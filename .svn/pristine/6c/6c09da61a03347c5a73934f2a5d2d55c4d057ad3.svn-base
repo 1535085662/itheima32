@@ -1,0 +1,12 @@
+package com.itzpx.bos.dao.impl;
+
+import org.springframework.stereotype.Repository;
+
+import com.itzpx.bos.dao.IRegionDao;
+import com.itzpx.bos.dao.base.impl.BaseDaoImpl;
+import com.itzpx.bos.domain.Region;
+
+@Repository
+public class RegionDaoImpl extends BaseDaoImpl<Region> implements IRegionDao{
+
+}

@@ -1,0 +1,45 @@
+package com.itzpx.bos.web.action.base;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
+import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.ModelDriven;
+/**
+ * 	表现层通用实现
+ * @author 曾大爷
+ *
+ * @param <T>
+ */
+public class BaseAction<T> extends ActionSupport implements ModelDriven<T> {
+	public static final String HOME = "home";
+	public static final String LIST = "list";
+	//模型对象
+	protected T model;
+	@Override
+	public T getModel() {
+		// TODO Auto-generated method stub
+		return model;
+	}
+	//动态获取实体类型，通过反射创建model对象，User user = new User();
+	public BaseAction() {
+		//1.获取父类类型
+		ParameterizedType genericSuperclass = (ParameterizedType) this.getClass().getGenericSuperclass();
+		//2.获取BaseAction上声明的泛型数组
+		Type[] actualTypeArguments = genericSuperclass.getActualTypeArguments();
+		//3.Type 向下转为 Class<T>实现类
+		Class<T> entityClass = (Class<T>) actualTypeArguments[0];
+		//4.通过反射创建对象
+		try {
+			model = entityClass.newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+
+}
